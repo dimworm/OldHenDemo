@@ -1,0 +1,25 @@
+new oldHen, round, counter, stdout(`rho:io:stdout`) in {
+
+      contract oldHen ( ack ) = {
+
+        round!(1)|
+        counter!(1)|
+        for (@round_ <= round; @counter_ <= counter) {
+            if(round_ < 4) {
+                if(counter_ < 4 ){
+                        counter!( counter_ + 1 )|
+                        round!( round_ )|
+                        stdout!(["counter",counter_ + 1])                    
+                }    
+                else {
+                    round!( round_ + 1)|
+                    counter!( 1 )|
+                    stdout!(["round", round_ + 1])                
+                }
+            }    
+                
+        }
+    }|
+    oldHen!(1)
+
+}

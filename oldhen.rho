@@ -1,0 +1,152 @@
+new oldHen, uriChan, insertArbitrary(`rho:registry:insertArbitrary`), stdout(`rho:io:stdout`) in {
+
+  	contract oldHen ( ack ) = {
+  		new round, counter, diceBox, final, sMap, one, two, three, four, five, six in {
+			round!(1)|
+			counter!(1)|
+			sMap!("")|
+			for (@round_ <= round; @counter_ <= counter) {
+				if (round_ < 4) {
+					if(counter_ < 4 ){
+						new d_ack in {
+							diceBox!( *d_ack )|
+							for ( _ <- d_ack) {
+								new f_ack in {
+									final!( *f_ack )|
+									for ( _ <- f_ack ) {
+										counter!( counter_ + 1 )|
+										round!( round_ )|
+										stdout!(["counter",counter_ + 1])					
+									}
+								}	
+							}
+						}	
+					}	
+					else {
+						round!( round_ + 1)|
+						counter!( 1 )|
+						stdout!(["round", round_ + 1])				
+					}
+				}
+				else {
+					for (@t1 <- sMap) {
+						ack!(t1)
+					}
+				}
+			}|
+
+			contract diceBox( ack ) = {
+				one!(0)|
+				two!(0)|
+				three!(0)|
+				four!(0)|
+				five!(0)|
+				six!(0)|
+				new dice,check in {
+					dice!(1)|
+					dice!(1)|
+					dice!(1)|
+					dice!(1)|
+					check!(1)|
+
+					for ( _ <= dice) {
+						for (@t1 <- one){
+							one!(t1 + 1)|
+							stdout!(["1",t1+1])|
+							for (@ts <- sMap) {
+								sMap!(ts ++ "1 ")
+							}|	
+							for (@t2 <- check){
+								check!(t2+1)
+							}
+						}
+					}|
+					for ( _ <= dice) {
+						for (@t1 <- two){
+							two!(t1 + 1)|
+							stdout!(["2",t1+1])|
+							for (@ts <- sMap) {
+								sMap!(ts ++ "2 ")	
+							}|
+							for (@t2 <- check){
+								check!(t2+1)
+							}
+						}
+					}|
+					for ( _ <= dice) {
+						for (@t1 <- three){
+							three!(t1 + 1)|
+							stdout!(["3", t1+1])|
+							for (@ts <- sMap) {
+								sMap!(ts ++ "3 ")	
+							}|
+							for (@t2 <- check){
+								check!(t2+1)
+							}
+						}
+					}|
+					for ( _ <= dice) {
+						for (@t1 <- four){
+							four!(t1 + 1)|
+							stdout!(["4", t1+1])|
+							for (@ts <- sMap) {
+								sMap!(ts ++ "4 ")	
+							}|
+							for (@t2 <- check){
+								check!(t2+1)
+							}
+						}
+					}|
+					for ( _ <= dice) {
+						for (@t1 <- five){
+							five!(t1 + 1)|
+							stdout!(["5", t1+1])|
+							for (@ts <- sMap) {
+								sMap!(ts ++ "5 ")	
+							}|
+							for (@t2 <- check){
+								check!(t2+1)
+							}					
+						}
+					}|
+					for ( _ <= dice) {
+						for (@t1 <- six){
+							six!(t1 + 1)|
+							stdout!(["6", t1+1])|
+							for (@ts <- sMap) {
+								sMap!(ts ++ "6 ")	
+							}|
+							for (@t2 <- check){
+								check!(t2+1)
+							}
+						}
+					}|	
+					for ( @t2 <= check){
+						if (t2 > 3) {
+							ack!(Nil)
+						}
+						else {
+							check!(t2)
+						}
+					}	
+				}	
+			}|
+
+			contract final( ack ) = {	
+				for (@temp1 <-one; @temp2 <-two; @temp3 <-three; @temp4 <-four; @temp5 <-five; @temp6<-six){
+					if ( temp1 > 2 or temp2 > 2 or temp3 > 2 or temp4 > 2 or temp5 > 2 or temp6 > 2 ) {
+						for (@ts <- sMap) {
+							sMap!(ts ++ "score ")	
+						}
+					}|
+					ack!(Nil)
+				}
+			}
+		}	
+	}|
+
+	insertArbitrary!(bundle+{*oldHen}  , *uriChan) |
+	for(@uri <- uriChan) {
+		stdout!(["dimworm",uri])
+	}
+}
